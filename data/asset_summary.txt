@@ -1,0 +1,38 @@
+============================================================
+COMPREHENSIVE TRADEABLE ASSET LIST
+============================================================
+Total Assets: 10147
+
+By Asset Type:
+  stock: 10077
+  etf: 27
+  commodity: 14
+  index: 11
+  forex: 10
+  crypto: 8
+
+By Source:
+  SEC_EDGAR: 10077
+  ETF: 27
+  COMMODITY: 14
+  INDEX: 11
+  FOREX: 10
+  CRYPTO: 8
+
+By Exchange:
+  US: 10104
+  INDEX: 11
+  FOREX: 10
+  CRYPTO: 8
+  NYMEX: 5
+  COMEX: 3
+  ICE: 3
+  CBOT: 3
+
+Sample Assets by Category:
+  stock: AAPL, NVDA, MSFT, GOOGL, AMZN, META, TSM, BRK-B, TSLA, LLY
+  etf: VOO, IVV, VTI, IWM, EFA, VEA, VWO, EEM, TLT, IEF
+  index: ^GSPC, ^DJI, ^IXIC, ^RUT, ^VIX, ^TNX, ^FVX, ^IRX, ^N225, ^FTSE
+  commodity: GC=F, SI=F, PL=F, HG=F, CL=F, NG=F, RB=F, HO=F, ZC=F, ZW=F
+  forex: EURUSD=X, GBPUSD=X, USDJPY=X, USDCHF=X, AUDUSD=X, USDCAD=X, NZDUSD=X, EURGBP=X, EURJPY=X, GBPJPY=X
+  crypto: BTC-USD, ETH-USD, BNB-USD, XRP-USD, SOL-USD, ADA-USD, DOGE-USD, DOT-USD
