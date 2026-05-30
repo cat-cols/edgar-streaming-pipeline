@@ -66,7 +66,7 @@ Asset categories and classifications used in the EDGAR streaming pipeline.
 ## Data Sources
 
 ### SEC EDGAR
-- **File**: data/company_tickers.json
+- **File**: data/raw/sec/company_tickers.json
 - **Coverage**: All US public companies
 - **Fields**: ticker, CIK, company name
 - **Update Frequency**: Monthly

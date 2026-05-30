@@ -59,6 +59,8 @@ htmlcov/
 # Data cache and generated files
 data/cache/
 data/screening_results/
+data/raw/
+data/processed/
 assets/compiled/
 model/*.pkl
 model/*.h5

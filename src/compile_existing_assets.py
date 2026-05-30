@@ -8,7 +8,7 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict, List
 
-def load_sec_tickers(filepath: str = "data/company_tickers.json") -> List[Dict]:
+def load_sec_tickers(filepath: str = "data/raw/sec/company_tickers.json") -> List[Dict]:
     """Load SEC company tickers from existing file"""
     print("Loading SEC company tickers...")
     

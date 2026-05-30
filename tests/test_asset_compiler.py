@@ -10,7 +10,7 @@ from pathlib import Path
 def test_sec_data():
     """Test loading SEC company tickers"""
     print("Testing SEC company tickers...")
-    filepath = "assets/1.ingestion/2.Data_Ingestion/0.SOURCES/_data/company_tickers.json"
+    filepath = "data/raw/sec/company_tickers.json"
     
     try:
         with open(filepath, 'r') as f:

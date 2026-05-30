@@ -32,15 +32,15 @@ class AssetCompiler:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.assets = {}
-        
-    def load_sec_company_tickers(self, filepath: str = "assets/1.ingestion/2.Data_Ingestion/0.SOURCES/_data/company_tickers.json") -> List[Dict]:
+
+    def load_sec_company_tickers(self, filepath: str = "data/raw/sec/company_tickers.json") -> List[Dict]:
         """Load SEC company tickers (US public companies)"""
         logger.info("Loading SEC company tickers...")
-        
+
         try:
             with open(filepath, 'r') as f:
                 data = json.load(f)
-            
+
             companies = []
             for key, value in data.items():
                 companies.append({
@@ -51,28 +51,28 @@ class AssetCompiler:
                     'asset_type': 'stock',
                     'exchange': 'US'
                 })
-            
+
             logger.info(f"Loaded {len(companies)} companies from SEC")
             return companies
-            
+
         except Exception as e:
             logger.error(f"Error loading SEC tickers: {e}")
             return []
-    
+
     def download_nasdaq_listings(self) -> List[Dict]:
         """Download NASDAQ listed stocks from GitHub"""
         logger.info("Downloading NASDAQ listings...")
-        
+
         try:
             url = "https://raw.githubusercontent.com/datasets/nasdaq-listings/main/data/nasdaq-listed.csv"
             response = requests.get(url)
-            
+
             from io import StringIO
             df = pd.read_csv(StringIO(response.text))
-            
+
             # Filter out footer row if present
             df = df[~df['Symbol'].str.contains('File Creation Time', na=False)]
-            
+
             assets = []
             for _, row in df.iterrows():
                 assets.append({
@@ -82,18 +82,18 @@ class AssetCompiler:
                     'asset_type': 'stock',
                     'exchange': 'NASDAQ'
                 })
-            
+
             logger.info(f"Loaded {len(assets)} assets from NASDAQ")
             return assets
-            
+
         except Exception as e:
             logger.error(f"Error downloading NASDAQ listings: {e}")
             return []
-    
+
     def get_sp500_stocks(self) -> List[Dict]:
         """Get S&P 500 stock list using yfinance"""
         logger.info("Getting S&P 500 stocks...")
-        
+
         try:
             # S&P 500 ETF holdings
             spy = yf.Ticker("SPY")
@@ -105,7 +105,7 @@ class AssetCompiler:
                 url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
                 tables = pd.read_html(url)
                 sp500_table = tables[0]
-                
+
                 assets = []
                 for _, row in sp500_table.iterrows():
                     ticker = row['Ticker symbol']
@@ -117,7 +117,7 @@ class AssetCompiler:
                         'asset_type': 'stock',
                         'exchange': 'US'
                     })
-                
+
                 logger.info(f"Loaded {len(assets)} S&P 500 stocks")
                 return assets
                 

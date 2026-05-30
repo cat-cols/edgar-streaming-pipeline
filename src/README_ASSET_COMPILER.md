@@ -62,7 +62,7 @@ python src/test_asset_compiler.py
 
 ### Primary Sources
 
-1. **SEC EDGAR** (`data/company_tickers.json`)
+1. **SEC EDGAR** (`data/raw/sec/company_tickers.json`)
    - All US public companies
    - Includes ticker, CIK, and company name
    - ~10,000+ companies
@@ -183,7 +183,7 @@ commodities = assets[assets['asset_type'] == 'commodity']
 
 1. **For SEC data**: The SEC updates `company_tickers.json` regularly. Replace the file in:
    ```
-   data/company_tickers.json
+   data/raw/sec/company_tickers.json
    ```
 
 2. **For NASDAQ data**: The GitHub repository is updated regularly. Re-run the compiler to fetch latest data.
@@ -198,7 +198,7 @@ commodities = assets[assets['asset_type'] == 'commodity']
 ## Troubleshooting
 
 ### Issue: SEC file not found
-**Solution**: The SEC data file is located at `data/company_tickers.json`. The script uses this path by default.
+**Solution**: The SEC data file is located at `data/raw/sec/company_tickers.json`. The script uses this path by default.
 
 ### Issue: Network errors when downloading NASDAQ data
 **Solution**: Use `compile_existing_assets.py` instead, which doesn't require external downloads.
