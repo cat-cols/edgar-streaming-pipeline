@@ -1,0 +1,20 @@
+# ETL Pipeline Cron Configuration
+# Add this to your crontab using: crontab -e
+
+# Run ETL pipeline daily at 5:00 AM UTC (adjust timezone as needed)
+0 5 * * * cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/run_etl_pipeline.py >> logs/cron_output.log 2>&1
+
+# Run ETL pipeline every 6 hours
+0 */6 * * * cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/run_etl_pipeline.py >> logs/cron_output.log 2>&1
+
+# Run ETL pipeline on weekdays at 9:00 AM EST (14:00 UTC)
+0 14 * * 1-5 cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/run_etl_pipeline.py >> logs/cron_output.log 2>&1
+
+# Run SEC data ingestion daily at 6:00 AM UTC (before market open)
+0 6 * * * cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/ingest_sec_data.py >> logs/sec_ingestion.log 2>&1
+
+# Run price data fetching daily at 6:00 PM UTC (after market close)
+0 18 * * * cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/fetch_historical_prices.py >> logs/price_fetching.log 2>&1
+
+# Run SEC RSS feed fetcher every 2 hours during trading hours (9 AM - 5 PM ET = 13:00 - 21:00 UTC)
+0 13-21/2 * * * cd /Users/b/data/projects/edgar-streaming-pipeline && /usr/bin/python3 scripts/fetch_sec_rss_feed.py >> logs/rss_feed_fetching.log 2>&1
