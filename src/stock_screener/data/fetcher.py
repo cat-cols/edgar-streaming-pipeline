@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 class DataFetcher:
     """Fetch financial data from various sources"""
-    
+
     def __init__(self):
         self.cache_dir = Path("data/cache")
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-    
-    def load_asset_universe(self, filepath: str = "assets/compiled/comprehensive_asset_list.csv") -> pd.DataFrame:
+
+    def load_asset_universe(self, filepath: str = "data/reference/comprehensive_asset_list.csv") -> pd.DataFrame:
         """Load the compiled asset universe"""
         logger.info("Loading asset universe...")
         df = pd.read_csv(filepath)
@@ -39,11 +39,26 @@ class DataFetcher:
         for i in range(0, len(tickers), batch_size):
             batch = tickers[i:i+batch_size]
             try:
-                batch_data = yf.download(batch, period=period, interval=interval, progress=False)
-                if len(batch) > 0:
-                    for ticker in batch:
-                        if ticker in batch_data.columns.levels[0]:
-                            data[ticker] = batch_data[ticker].copy()
+                batch_data = yf.download(batch, period=period, interval=interval, progress=False, auto_adjust=False)
+                
+                # Handle different yfinance return formats
+                if isinstance(batch_data, pd.DataFrame) and not batch_data.empty:
+                    # Check if it's a multi-index column format (newer yfinance)
+                    if isinstance(batch_data.columns, pd.MultiIndex):
+                        for ticker in batch:
+                            if ticker in batch_data.columns.levels[0]:
+                                data[ticker] = batch_data[ticker].copy()
+                    else:
+                        # Single ticker or different format
+                        if len(batch) == 1:
+                            ticker = batch[0]
+                            data[ticker] = batch_data.copy()
+                        else:
+                            # Try to extract by column names
+                            for ticker in batch:
+                                if ticker in batch_data.columns:
+                                    data[ticker] = batch_data[[ticker]].copy()
+                
                 logger.info(f"Fetched batch {i//batch_size + 1}/{(len(tickers)-1)//batch_size + 1}")
             except Exception as e:
                 logger.error(f"Error fetching batch {i//batch_size + 1}: {e}")

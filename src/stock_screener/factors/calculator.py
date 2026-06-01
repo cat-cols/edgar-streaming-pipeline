@@ -114,6 +114,12 @@ class FactorCalculator:
                 })
         
         df = pd.DataFrame(data)
+        
+        # Handle empty DataFrame
+        if df.empty:
+            logger.warning("No technical indicators data available, returning empty DataFrame")
+            return pd.DataFrame()
+        
         df.set_index('ticker', inplace=True)
         
         # Calculate momentum scores (higher momentum = better)
@@ -157,6 +163,12 @@ class FactorCalculator:
             })
         
         df = pd.DataFrame(data)
+        
+        # Handle empty DataFrame
+        if df.empty:
+            logger.warning("No data available for low volatility factors, returning empty DataFrame")
+            return pd.DataFrame()
+        
         df.set_index('ticker', inplace=True)
         
         # Calculate low volatility scores (lower beta/volatility = better)
@@ -186,21 +198,59 @@ class FactorCalculator:
                 'lowvol': 0.15
             }
         
-        # Merge all factor DataFrames
-        all_factors = pd.concat([
-            value_df[['value_score']],
-            quality_df[['quality_score']],
-            momentum_df[['momentum_score']],
-            lowvol_df[['lowvol_score']]
-        ], axis=1, join='outer')
+        # Handle empty DataFrames
+        dfs_to_concat = []
+        if not value_df.empty and 'value_score' in value_df.columns:
+            dfs_to_concat.append(value_df[['value_score']])
+        else:
+            logger.warning("Value factors DataFrame is empty or missing value_score")
+            
+        if not quality_df.empty and 'quality_score' in quality_df.columns:
+            dfs_to_concat.append(quality_df[['quality_score']])
+        else:
+            logger.warning("Quality factors DataFrame is empty or missing quality_score")
+            
+        if not momentum_df.empty and 'momentum_score' in momentum_df.columns:
+            dfs_to_concat.append(momentum_df[['momentum_score']])
+        else:
+            logger.warning("Momentum factors DataFrame is empty or missing momentum_score")
+            
+        if not lowvol_df.empty and 'lowvol_score' in lowvol_df.columns:
+            dfs_to_concat.append(lowvol_df[['lowvol_score']])
+        else:
+            logger.warning("Low volatility factors DataFrame is empty or missing lowvol_score")
         
-        # Calculate composite score
-        all_factors['composite_score'] = (
-            all_factors['value_score'] * weights['value'] +
-            all_factors['quality_score'] * weights['quality'] +
-            all_factors['momentum_score'] * weights['momentum'] +
-            all_factors['lowvol_score'] * weights['lowvol']
-        )
+        if not dfs_to_concat:
+            logger.error("No valid factor DataFrames to combine")
+            return pd.DataFrame()
+        
+        # Merge all factor DataFrames
+        all_factors = pd.concat(dfs_to_concat, axis=1, join='outer')
+        
+        # Calculate composite score (handle missing scores)
+        composite_score = pd.Series(0.0, index=all_factors.index)
+        
+        if 'value_score' in all_factors.columns:
+            composite_score += all_factors['value_score'] * weights['value']
+        else:
+            logger.warning("Missing value_score in composite calculation")
+            
+        if 'quality_score' in all_factors.columns:
+            composite_score += all_factors['quality_score'] * weights['quality']
+        else:
+            logger.warning("Missing quality_score in composite calculation")
+            
+        if 'momentum_score' in all_factors.columns:
+            composite_score += all_factors['momentum_score'] * weights['momentum']
+        else:
+            logger.warning("Missing momentum_score in composite calculation")
+            
+        if 'lowvol_score' in all_factors.columns:
+            composite_score += all_factors['lowvol_score'] * weights['lowvol']
+        else:
+            logger.warning("Missing lowvol_score in composite calculation")
+        
+        all_factors['composite_score'] = composite_score
         
         # Rank stocks by composite score
         all_factors['rank'] = all_factors['composite_score'].rank(ascending=False)
